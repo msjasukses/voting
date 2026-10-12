@@ -14,6 +14,7 @@ class UserController extends Controller
             ->when($request->q, fn ($query, $q) => $query->where(fn ($w) => $w
                 ->where('name', 'like', "%{$q}%")
                 ->orWhere('nis', 'like', "%{$q}%")
+                ->orWhere('nip', 'like', "%{$q}%")
                 ->orWhere('email', 'like', "%{$q}%")))
             ->orderByDesc('is_admin')
             ->orderBy('name')

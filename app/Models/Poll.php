@@ -90,6 +90,28 @@ class Poll extends Model
     }
 
     /**
+     * Ringkasan angka partisipasi untuk panel admin dan file export.
+     *
+     * @return array{total: int, siswa: int, guru: int, lainnya: int, pemilih_terdaftar: int, partisipasi: float}
+     */
+    public function rekap(): array
+    {
+        $total = $this->votes()->count();
+        $siswa = $this->votes()->whereHas('user', fn (Builder $query) => $query->whereNotNull('nis'))->count();
+        $guru = $this->votes()->whereHas('user', fn (Builder $query) => $query->whereNotNull('nip'))->count();
+        $pemilihTerdaftar = User::jumlahPemilihTerdaftar();
+
+        return [
+            'total' => $total,
+            'siswa' => $siswa,
+            'guru' => $guru,
+            'lainnya' => $total - $siswa - $guru,
+            'pemilih_terdaftar' => $pemilihTerdaftar,
+            'partisipasi' => $pemilihTerdaftar > 0 ? min(round($total / $pemilihTerdaftar * 100, 1), 100) : 0,
+        ];
+    }
+
+    /**
      * Kandidat beserta jumlah suara dan persentasenya, diurutkan dari suara terbanyak.
      */
     public function results()

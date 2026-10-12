@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Datacenter\Siswa;
 use App\Models\Poll;
 use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Http\Request;
-use Throwable;
 
 class PollController extends Controller
 {
@@ -19,7 +17,7 @@ class PollController extends Controller
         $stats = [
             'polls' => $polls->count(),
             'open' => $polls->filter->isOpen()->count(),
-            'voters' => $this->jumlahPemilih(),
+            'voters' => User::jumlahPemilihTerdaftar(),
             'votes' => Vote::count(),
         ];
 
@@ -45,8 +43,7 @@ class PollController extends Controller
         return view('admin.polls.show', [
             'poll' => $poll->load('candidates'),
             'results' => $poll->results(),
-            'totalVotes' => $poll->votes()->count(),
-            'eligibleVoters' => $this->jumlahPemilih(),
+            'rekap' => $poll->rekap(),
             'voters' => $poll->votes()->with(['user', 'candidate'])->latest()->paginate(20),
         ]);
     }
@@ -75,19 +72,6 @@ class PollController extends Controller
         $poll->votes()->delete();
 
         return back()->with('success', 'Semua suara pada voting ini telah direset.');
-    }
-
-    /**
-     * Jumlah siswa yang berhak memilih menurut Data Center. Jika Data Center tidak bisa
-     * dihubungi, pakai jumlah siswa yang pernah login ke aplikasi ini.
-     */
-    private function jumlahPemilih(): int
-    {
-        try {
-            return Siswa::bolehMemilih()->count();
-        } catch (Throwable) {
-            return User::whereNotNull('nis')->count();
-        }
     }
 
     private function validated(Request $request): array

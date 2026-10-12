@@ -14,6 +14,7 @@
 return [
     'school_name' => env('VOTING_SCHOOL_NAME', 'SMP Negeri 88 Jakarta'),
     'school_year' => env('VOTING_SCHOOL_YEAR', '2026/2027'),
+    'city' => env('VOTING_CITY', 'Jakarta'),
     'header_subtitle' => env('VOTING_HEADER_SUBTITLE', 'Pemilihan Ketua OSIS & MPK'),
     'title' => env('VOTING_TITLE', 'Pemilihan OSIS & MPK'),
     'description' => env('VOTING_DESCRIPTION', 'Pemilihan Ketua OSIS dan Ketua MPK'),

@@ -37,6 +37,18 @@ abstract class TestCase extends BaseTestCase
             $table->timestamps();
         });
 
+        $schema->create('guru', function (Blueprint $table) {
+            $table->id();
+            $table->string('nip')->unique();
+            $table->string('nuptk')->nullable();
+            $table->string('nama_ptk');
+            $table->string('jabatan')->nullable();
+            $table->string('password')->nullable();
+            $table->boolean('is_aktif')->default(true);
+            $table->string('account_status')->default('active');
+            $table->timestamps();
+        });
+
         $schema->create('tahun_ajaran', function (Blueprint $table) {
             $table->id();
             $table->string('nama_tahun_ajaran');

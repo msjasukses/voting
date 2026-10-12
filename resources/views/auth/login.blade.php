@@ -28,7 +28,7 @@
     </form>
 
     <p class="mt-6 text-center text-sm text-slate-500">
-        Siswa / pemilih?
-        <a href="{{ route('voter.login') }}" class="font-semibold text-indigo-600 hover:underline">Login dengan NIS</a>
+        Siswa / guru?
+        <a href="{{ route('voter.login') }}" class="font-semibold text-indigo-600 hover:underline">Login dengan NIS / NIP</a>
     </p>
 @endsection

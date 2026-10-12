@@ -6,10 +6,10 @@
     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold">Pengguna</h1>
-            <p class="text-slate-500">Admin, serta siswa dari Data Center yang sudah pernah login untuk memilih.</p>
+            <p class="text-slate-500">Admin, serta siswa &amp; guru dari Data Center yang sudah pernah login untuk memilih.</p>
         </div>
         <form method="GET" class="flex gap-2">
-            <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama, NIS, atau email…" class="input w-64">
+            <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama, NIS, NIP, atau email…" class="input w-64">
             <button class="btn-secondary">Cari</button>
         </form>
     </div>
@@ -45,7 +45,7 @@
                             <td class="px-5 py-3">
                                 @unless ($user->is(auth()->user()))
                                     <div class="flex justify-end gap-3">
-                                        @unless ($user->isSiswa())
+                                        @unless ($user->isPemilihDataCenter())
                                             <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}">
                                                 @csrf @method('PATCH')
                                                 <button class="cursor-pointer font-medium text-indigo-600 hover:underline">{{ $user->is_admin ? 'Jadikan pemilih' : 'Jadikan admin' }}</button>

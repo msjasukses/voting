@@ -5,14 +5,14 @@
 @section('content')
     <div class="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-xl shadow-slate-300/40">
         <h1 class="mb-2 text-2xl font-bold">🔐 Login Pemilih</h1>
-        <p class="mb-6 text-sm text-slate-500">Masukkan NIS / Nomor Peserta untuk melanjutkan.</p>
+        <p class="mb-6 text-sm text-slate-500">Siswa masukkan NIS, guru masukkan NIP untuk melanjutkan.</p>
 
         <form method="POST" action="{{ route('voter.login') }}" class="space-y-4">
             @csrf
             <div>
-                <label for="nis" class="mb-2 block font-bold">NIS / Nomor Peserta</label>
+                <label for="nis" class="mb-2 block font-bold">NIS / NIP</label>
                 <input id="nis" name="nis" value="{{ old('nis') }}" inputmode="numeric" autocomplete="off" autofocus required
-                       placeholder="Contoh: 88001"
+                       placeholder="Contoh: 88001 (siswa) atau NIP guru"
                        @class([
                            'block w-full rounded-xl border bg-white px-4 py-3 text-lg outline-none transition focus:ring-4',
                            'border-slate-300 focus:border-sky-600 focus:ring-sky-100' => ! $errors->has('nis'),

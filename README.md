@@ -11,8 +11,8 @@ Aplikasi pemungutan suara online: satu akun, satu suara per voting.
 - Logo: ganti `public/images/logo.svg`, atau taruh file logo sendiri di `public/images` lalu isi `VOTING_LOGO`
 
 **Pemilih**
-- Login cukup dengan **NIS / NISN**. Data siswa diambil dari database aplikasi **Data Center** (`datacenter_v2`), hanya siswa aktif yang bisa masuk
-- Tidak ada registrasi: akun pemilih otomatis dibuat/diperbarui (nama, NIS, kelas) saat siswa pertama kali login
+- **Siswa** login dengan **NIS / NISN**, **guru** login dengan **NIP / NUPTK**. Data diambil dari database aplikasi **Data Center** (`datacenter_v2`), hanya siswa & guru aktif yang bisa masuk
+- Tidak ada registrasi: akun pemilih otomatis dibuat/diperbarui (nama, NIS & kelas / NIP & jabatan) saat pertama kali login
 - Melihat daftar voting beserta statusnya (Berlangsung / Belum dimulai / Selesai)
 - Memilih kandidat (kartu dengan foto, nomor urut, visi & misi) — hanya sekali per voting
 - Melihat hasil sementara/akhir dalam bentuk grafik batang & persentase
@@ -29,7 +29,7 @@ Aplikasi pemungutan suara online: satu akun, satu suara per voting.
 
 | Tabel        | Kolom penting                                                                           |
 |--------------|------------------------------------------------------------------------------------------|
-| `users`      | `datacenter_siswa_id`, `nis`, `name`, `kelas`, `email`, `password`, `is_admin`            |
+| `users`      | `datacenter_siswa_id`, `datacenter_guru_id`, `nis`, `nip`, `name`, `kelas`, `jabatan`, `email`, `password`, `is_admin` |
 | `polls`      | `title`, `description`, `starts_at`, `ends_at`, `is_active`, `show_results`, `created_by` |
 | `candidates` | `poll_id`, `number`, `name`, `description`, `photo`                                      |
 | `votes`      | `poll_id`, `candidate_id`, `user_id`, `ip_address` — **UNIQUE(`poll_id`, `user_id`)**     |
@@ -59,7 +59,7 @@ npm run build
 ## Akun Demo
 
 Akun admin dibuat oleh `database/seeders/DatabaseSeeder.php` (password: `password`).
-Pemilih login dengan NIS siswa yang ada di Data Center.
+Pemilih login dengan NIS (siswa) atau NIP (guru) yang ada di Data Center.
 
 | Peran   | Email                 |
 |---------|-----------------------|
@@ -86,7 +86,7 @@ DATACENTER_DB_USERNAME=root
 DATACENTER_DB_PASSWORD=
 ```
 
-- Tabel yang dibaca: `siswa`, `siswa_rombel`, `rombongan_belajar`, `tahun_ajaran`
-- Syarat boleh memilih: `is_aktif = 1`, `status_siswa = 'Aktif'`, `account_status = 'active'`
+- Tabel yang dibaca: `siswa`, `guru`, `siswa_rombel`, `rombongan_belajar`, `tahun_ajaran`
+- Syarat boleh memilih — siswa: `is_aktif = 1`, `status_siswa = 'Aktif'`, `account_status = 'active'`; guru: `is_aktif = 1`, `account_status = 'active'`
 - Kelas diambil dari rombel tahun ajaran aktif (atau rombel terakhir jika belum ada)
-- Angka "Pemilih terdaftar" & "Partisipasi" di panel admin dihitung dari jumlah siswa aktif di Data Center
+- Angka "Pemilih terdaftar" & "Partisipasi" di panel admin dihitung dari jumlah siswa + guru aktif di Data Center

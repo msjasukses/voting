@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['poll_id', 'number', 'name', 'description', 'photo'])]
 class Candidate extends Model
@@ -23,7 +22,9 @@ class Candidate extends Model
 
     public function photoUrl(): ?string
     {
-        return $this->photo ? Storage::disk('public')->url($this->photo) : null;
+        // asset() follows the current request's base path, so photos still load
+        // when the app is served from a subfolder (e.g. /voting) and APP_URL differs.
+        return $this->photo ? asset('storage/'.$this->photo) : null;
     }
 
     public function initials(): string

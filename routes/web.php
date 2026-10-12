@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('polls', Admin\PollController::class);
         Route::post('polls/{poll}/reset', [Admin\PollController::class, 'resetVotes'])->name('polls.reset');
+        Route::get('polls/{poll}/export/excel', [Admin\PollExportController::class, 'excel'])->name('polls.export.excel');
+        Route::get('polls/{poll}/export/pdf', [Admin\PollExportController::class, 'pdf'])->name('polls.export.pdf');
 
         Route::resource('polls.candidates', Admin\CandidateController::class)
             ->only(['store', 'edit', 'update', 'destroy'])

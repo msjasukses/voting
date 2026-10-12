@@ -15,6 +15,14 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.polls.export.excel', $poll) }}" class="btn-secondary text-emerald-700">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m8 13 4 5m0-5-4 5"/></svg>
+                Export Excel
+            </a>
+            <a href="{{ route('admin.polls.export.pdf', $poll) }}" class="btn-secondary text-red-700">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6m-3-3 3 3 3-3"/></svg>
+                Export PDF
+            </a>
             <a href="{{ route('polls.show', $poll) }}" class="btn-secondary">Lihat sebagai pemilih</a>
             <a href="{{ route('admin.polls.edit', $poll) }}" class="btn-secondary">Edit</a>
             <form method="POST" action="{{ route('admin.polls.reset', $poll) }}" onsubmit="return confirm('Hapus SEMUA suara pada voting ini? Tindakan ini tidak dapat dibatalkan.')">
@@ -28,12 +36,16 @@
         </div>
     </div>
 
-    @php($turnout = $eligibleVoters > 0 ? round($totalVotes / $eligibleVoters * 100, 1) : 0)
+    @php($totalVotes = $rekap['total'])
     <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div class="card p-5"><p class="text-sm text-slate-500">Kandidat</p><p class="mt-1 text-3xl font-bold">{{ $poll->candidates->count() }}</p></div>
-        <div class="card p-5"><p class="text-sm text-slate-500">Suara masuk</p><p class="mt-1 text-3xl font-bold">{{ number_format($totalVotes) }}</p></div>
-        <div class="card p-5"><p class="text-sm text-slate-500">Pemilih terdaftar</p><p class="mt-1 text-3xl font-bold">{{ number_format($eligibleVoters) }}</p></div>
-        <div class="card p-5"><p class="text-sm text-slate-500">Partisipasi</p><p class="mt-1 text-3xl font-bold">{{ min($turnout, 100) }}%</p></div>
+        <div class="card p-5">
+            <p class="text-sm text-slate-500">Suara masuk</p>
+            <p class="mt-1 text-3xl font-bold">{{ number_format($rekap['total']) }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ number_format($rekap['siswa']) }} siswa · {{ number_format($rekap['guru']) }} guru @if ($rekap['lainnya']) · {{ number_format($rekap['lainnya']) }} lainnya @endif</p>
+        </div>
+        <div class="card p-5"><p class="text-sm text-slate-500">Pemilih terdaftar</p><p class="mt-1 text-3xl font-bold">{{ number_format($rekap['pemilih_terdaftar']) }}</p></div>
+        <div class="card p-5"><p class="text-sm text-slate-500">Partisipasi</p><p class="mt-1 text-3xl font-bold">{{ $rekap['partisipasi'] }}%</p></div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-5">

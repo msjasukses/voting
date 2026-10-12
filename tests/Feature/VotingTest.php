@@ -41,7 +41,7 @@ class VotingTest extends TestCase
         $this->get(route('voter.login'))
             ->assertOk()
             ->assertSee('Login Pemilih')
-            ->assertSee('NIS / Nomor Peserta');
+            ->assertSee('NIS / NIP');
     }
 
     public function test_student_from_datacenter_can_login_with_nis(): void
@@ -80,6 +80,44 @@ class VotingTest extends TestCase
         foreach (['99999', '88002', '88003'] as $nis) {
             $this->post(route('voter.login'), ['nis' => $nis])->assertSessionHasErrors('nis');
         }
+
+        $this->assertGuest();
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_teacher_from_datacenter_can_login_with_nip_and_vote(): void
+    {
+        $guruId = DB::connection('datacenter')->table('guru')->insertGetId([
+            'nip' => '198001012005011001',
+            'nama_ptk' => 'Ibu Sari',
+            'jabatan' => 'Wakil Kepala Sekolah',
+        ]);
+        $poll = $this->openPoll();
+
+        $this->post(route('voter.login'), ['nis' => '198001012005011001'])->assertRedirect(route('polls.index'));
+
+        $user = User::firstWhere('datacenter_guru_id', $guruId);
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame('198001012005011001', $user->nip);
+        $this->assertSame('Ibu Sari', $user->name);
+        $this->assertSame('NIP 198001012005011001 · Wakil Kepala Sekolah', $user->identitas());
+        $this->assertFalse($user->is_admin);
+
+        $this->post(route('polls.vote', $poll), ['candidate_id' => $poll->candidates->first()->id])
+            ->assertRedirect(route('polls.show', $poll));
+        $this->assertDatabaseHas('votes', ['poll_id' => $poll->id, 'user_id' => $user->id]);
+    }
+
+    public function test_inactive_teacher_cannot_login(): void
+    {
+        DB::connection('datacenter')->table('guru')->insert([
+            'nip' => '198001012005011002',
+            'nama_ptk' => 'Pak Nonaktif',
+            'is_aktif' => false,
+        ]);
+
+        $this->post(route('voter.login'), ['nis' => '198001012005011002'])
+            ->assertSessionHasErrors(['nis' => 'Guru tidak aktif sehingga tidak memiliki hak pilih.']);
 
         $this->assertGuest();
         $this->assertDatabaseCount('users', 0);
