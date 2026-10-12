@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <!-- Logo pengganti (placeholder). Ganti dengan logo resmi sekolah. -->
+  <path d="M50 4 L92 16 V52 C92 78 72 96 50 106 C28 96 8 78 8 52 V16 Z" fill="#f59e0b"/>
+  <path d="M50 10 L86 20 V52 C86 74 69 90 50 99 C31 90 14 74 14 52 V20 Z" fill="#0c3b6e"/>
+  <text x="50" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#f59e0b">SMP NEGERI</text>
+  <text x="50" y="66" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="34" font-weight="900" fill="#f59e0b">8 8</text>
+  <rect x="47" y="38" width="6" height="30" rx="1" fill="#ffffff"/>
+  <path d="M36 74 H64 L60 80 H40 Z" fill="#ffffff"/>
+  <rect x="26" y="83" width="48" height="10" rx="2" fill="#f59e0b"/>
+  <text x="50" y="91" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="700" fill="#0c3b6e">JAKARTA</text>
+</svg>
