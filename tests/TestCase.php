@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Datacenter\DatacenterModel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ abstract class TestCase extends BaseTestCase
             'foreign_key_constraints' => false,
         ]]);
         DB::purge('datacenter');
+        DatacenterModel::lupakanDaftarKolom();
 
         $schema = Schema::connection('datacenter');
 

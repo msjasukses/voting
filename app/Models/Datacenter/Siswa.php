@@ -3,18 +3,13 @@
 namespace App\Models\Datacenter;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Data siswa dari aplikasi Data Center (koneksi "datacenter", READ-ONLY).
  */
-class Siswa extends Model
+class Siswa extends DatacenterModel
 {
-    protected $connection = 'datacenter';
-
     protected $table = 'siswa';
-
-    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
@@ -30,8 +25,8 @@ class Siswa extends Model
     {
         return $query
             ->where('is_aktif', true)
-            ->where('status_siswa', 'Aktif')
-            ->where('account_status', 'active');
+            ->when(static::punyaKolom('status_siswa'), fn (Builder $query) => $query->where('status_siswa', 'Aktif'))
+            ->when(static::punyaKolom('account_status'), fn (Builder $query) => $query->where('account_status', 'active'));
     }
 
     public static function findByNomor(string $nomor): ?self
@@ -54,15 +49,5 @@ class Siswa extends Model
             ->orderByDesc('ta.is_aktif')
             ->orderByDesc('ta.id')
             ->value('rb.nama_rombel');
-    }
-
-    public function save(array $options = []): bool
-    {
-        throw new \LogicException('Data siswa Data Center bersifat read-only.');
-    }
-
-    public function delete(): ?bool
-    {
-        throw new \LogicException('Data siswa Data Center bersifat read-only.');
     }
 }

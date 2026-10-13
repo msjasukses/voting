@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Throwable;
@@ -34,20 +35,45 @@ class VoterLoginController extends Controller
         $nomor = trim($data['nis']);
 
         try {
-            $siswa = Siswa::findByNomor($nomor);
-            $guru = $siswa ? null : Guru::findByNomor($nomor);
+            DB::connection('datacenter')->getPdo();
         } catch (Throwable $e) {
             Log::error('Gagal terhubung ke database Data Center: '.$e->getMessage());
 
             return $this->gagal('Server Data Center tidak dapat dihubungi. Silakan hubungi panitia.');
         }
 
+        try {
+            $pemilih = $this->cariPemilih($nomor);
+        } catch (Throwable $e) {
+            Log::error('Gagal memproses login pemilih (cek dengan: php artisan datacenter:cek): '.$e->getMessage(), ['nomor' => $nomor]);
+
+            return $this->gagal('Terjadi kesalahan saat membaca data Data Center. Silakan hubungi panitia.');
+        }
+
+        if (is_string($pemilih)) {
+            return $this->gagal($pemilih);
+        }
+
+        Auth::login($pemilih);
+        $request->session()->regenerate();
+
+        return redirect()->route('polls.index');
+    }
+
+    /**
+     * Cari siswa lalu guru dengan nomor tersebut dan salin datanya ke tabel users lokal.
+     * Mengembalikan pesan kesalahan jika nomor tidak terdaftar atau tidak punya hak pilih.
+     */
+    private function cariPemilih(string $nomor): User|string
+    {
+        $siswa = Siswa::findByNomor($nomor);
+
         if ($siswa) {
             if (! Siswa::whereKey($siswa->id)->bolehMemilih()->exists()) {
-                return $this->gagal('Siswa tidak aktif sehingga tidak memiliki hak pilih.');
+                return 'Siswa tidak aktif sehingga tidak memiliki hak pilih.';
             }
 
-            $user = User::updateOrCreate(
+            return User::updateOrCreate(
                 ['datacenter_siswa_id' => $siswa->id],
                 [
                     'nis' => $siswa->nis ?: $siswa->nisn,
@@ -56,12 +82,16 @@ class VoterLoginController extends Controller
                     'is_admin' => false,
                 ],
             );
-        } elseif ($guru) {
+        }
+
+        $guru = Guru::findByNomor($nomor);
+
+        if ($guru) {
             if (! Guru::whereKey($guru->id)->bolehMemilih()->exists()) {
-                return $this->gagal('Guru tidak aktif sehingga tidak memiliki hak pilih.');
+                return 'Guru tidak aktif sehingga tidak memiliki hak pilih.';
             }
 
-            $user = User::updateOrCreate(
+            return User::updateOrCreate(
                 ['datacenter_guru_id' => $guru->id],
                 [
                     'nip' => $guru->nip,
@@ -70,14 +100,9 @@ class VoterLoginController extends Controller
                     'is_admin' => false,
                 ],
             );
-        } else {
-            return $this->gagal('NIS / NIP tidak terdaftar.');
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('polls.index');
+        return 'NIS / NIP tidak terdaftar.';
     }
 
     private function gagal(string $pesan): RedirectResponse

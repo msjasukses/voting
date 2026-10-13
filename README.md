@@ -90,3 +90,14 @@ DATACENTER_DB_PASSWORD=
 - Syarat boleh memilih — siswa: `is_aktif = 1`, `status_siswa = 'Aktif'`, `account_status = 'active'`; guru: `is_aktif = 1`, `account_status = 'active'`
 - Kelas diambil dari rombel tahun ajaran aktif (atau rombel terakhir jika belum ada)
 - Angka "Pemilih terdaftar" & "Partisipasi" di panel admin dihitung dari jumlah siswa + guru aktif di Data Center
+
+### Cek koneksi Data Center di server
+
+```bash
+php artisan datacenter:cek
+```
+
+Menampilkan koneksi yang dipakai, memeriksa tabel & kolom yang dibutuhkan, dan menghitung siswa/guru
+yang berhak memilih. Kolom yang ditambahkan belakangan di aplikasi Data Center (`guru.nuptk`,
+`siswa.status_siswa`, `account_status`) bersifat opsional: jika belum ada, aplikasi voting tetap jalan
+dan pencarian lewat kolom itu dilewati. Detail error login pemilih dicatat di `storage/logs/laravel.log`.

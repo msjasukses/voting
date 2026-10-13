@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Poll;
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class VotingTest extends TestCase
@@ -106,6 +108,46 @@ class VotingTest extends TestCase
         $this->post(route('polls.vote', $poll), ['candidate_id' => $poll->candidates->first()->id])
             ->assertRedirect(route('polls.show', $poll));
         $this->assertDatabaseHas('votes', ['poll_id' => $poll->id, 'user_id' => $user->id]);
+    }
+
+    public function test_teacher_can_login_on_older_datacenter_without_nuptk_and_account_status(): void
+    {
+        $schema = Schema::connection('datacenter');
+        $schema->drop('guru');
+        $schema->create('guru', function (Blueprint $table) {
+            $table->id();
+            $table->string('nip')->unique();
+            $table->string('nama_ptk');
+            $table->string('jabatan')->nullable();
+            $table->boolean('is_aktif')->default(true);
+            $table->timestamps();
+        });
+        $guruId = DB::connection('datacenter')->table('guru')->insertGetId(['nip' => '1001617', 'nama_ptk' => 'Pak Budi']);
+
+        $this->post(route('voter.login'), ['nis' => '1001617'])->assertRedirect(route('polls.index'));
+
+        $this->assertAuthenticatedAs(User::firstWhere('datacenter_guru_id', $guruId));
+    }
+
+    public function test_datacenter_query_error_shows_read_error_message(): void
+    {
+        Schema::connection('datacenter')->drop('guru');
+
+        $this->post(route('voter.login'), ['nis' => '1001617'])
+            ->assertSessionHasErrors(['nis' => 'Terjadi kesalahan saat membaca data Data Center. Silakan hubungi panitia.']);
+
+        $this->assertGuest();
+    }
+
+    public function test_unreachable_datacenter_shows_connection_error_message(): void
+    {
+        config(['database.connections.datacenter.database' => storage_path('tidak-ada.sqlite')]);
+        DB::purge('datacenter');
+
+        $this->post(route('voter.login'), ['nis' => '1001617'])
+            ->assertSessionHasErrors(['nis' => 'Server Data Center tidak dapat dihubungi. Silakan hubungi panitia.']);
+
+        $this->assertGuest();
     }
 
     public function test_inactive_teacher_cannot_login(): void
