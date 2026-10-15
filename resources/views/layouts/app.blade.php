@@ -20,6 +20,7 @@
                 @if (auth()->user()->is_admin)
                     <a href="{{ route('admin.polls.index') }}" @class(['rounded-lg px-3 py-2 font-medium hover:bg-slate-100', 'bg-slate-100 text-indigo-600' => request()->routeIs('admin.polls.*')])>Kelola Voting</a>
                     <a href="{{ route('admin.users.index') }}" @class(['rounded-lg px-3 py-2 font-medium hover:bg-slate-100', 'bg-slate-100 text-indigo-600' => request()->routeIs('admin.users.*')])>Pengguna</a>
+                    <a href="{{ route('admin.settings.edit') }}" @class(['rounded-lg px-3 py-2 font-medium hover:bg-slate-100', 'bg-slate-100 text-indigo-600' => request()->routeIs('admin.settings.*')])>Pengaturan</a>
                 @endif
 
                 <span class="mx-2 hidden h-6 w-px bg-slate-200 sm:block"></span>

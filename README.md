@@ -7,8 +7,7 @@ Aplikasi pemungutan suara online: satu akun, satu suara per voting.
 **Halaman awal** (`/`)
 - Header berisi logo dan nama sekolah, serta jam & tanggal WIB yang berjalan langsung
 - Tombol **Mulai Voting** (ke halaman Login Pemilih `/masuk`) dan **Admin** (ke login admin `/login`)
-- Semua teks bisa diubah lewat `.env` (`VOTING_SCHOOL_NAME`, `VOTING_TITLE`, dst., lihat `config/voting.php`)
-- Logo: ganti `public/images/logo.svg`, atau taruh file logo sendiri di `public/images` lalu isi `VOTING_LOGO`
+- Semua teks & logo bisa diubah admin lewat menu **Pengaturan** (`/admin/pengaturan`), dengan pratinjau langsung. Nilai bawaan ada di `config/voting.php` / `.env`
 
 **Pemilih**
 - **Siswa** login dengan **NIS / NISN**, **guru** login dengan **NIP / NUPTK**. Data diambil dari database aplikasi **Data Center** (`datacenter_v2`), hanya siswa & guru aktif yang bisa masuk

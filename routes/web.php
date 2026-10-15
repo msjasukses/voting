@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
             ->only(['store', 'edit', 'update', 'destroy'])
             ->scoped(['candidate' => 'id']);
 
+        Route::get('pengaturan', [Admin\SettingController::class, 'edit'])->name('settings.edit');
+        Route::put('pengaturan', [Admin\SettingController::class, 'update'])->name('settings.update');
+
         Route::get('users', [Admin\UserController::class, 'index'])->name('users.index');
         Route::patch('users/{user}/toggle-admin', [Admin\UserController::class, 'toggleAdmin'])->name('users.toggle-admin');
         Route::delete('users/{user}', [Admin\UserController::class, 'destroy'])->name('users.destroy');
